@@ -19,7 +19,7 @@ module BundleRequests
       s = Time.now
       puts "*************#{Thread.current.name} #{Time.now.to_f*1000}   **************"
     
-      if env['REQUEST_PATH'] == "/api/v3/things/event.json"
+      if env['REQUEST_PATH'] == @configuration['incoming_request']
         # Event injection api
         
         #wait if any batch is currently getting processed
@@ -28,8 +28,9 @@ module BundleRequests
 
         # Replace this locking mechanism with stop and wakeup ...
         while @entrance_lock.locked?
-          sleep(0.005)
+          sleep(@configuration['thread_wait_at_lock'])
         end
+        
         @sync_mutex.synchronize do 
           if !@exit_lock.locked?
             @exit_lock.lock
@@ -41,13 +42,13 @@ module BundleRequests
 
         if @exit_lock.owned?
           # Frequency of batch in seconds
-          sleep(0.030)
+          sleep(@configuration['wait_time'])
           @entrance_lock.lock
           puts "Locking 1st lock"
           #adding sleep just to make sure even if thread has not completed queue
           #This point is very important Need to add correct sync here
           # I used acquire 1st lock and some requests have already entered inside
-          sleep(0.010)
+          sleep(@configuration['thread_wait_after_closing_entrance'])
           @requests_counter = @thread_env_queue.length
 
           current_threads = []
@@ -77,7 +78,7 @@ module BundleRequests
             # byebug
           end
           puts rack_input
-          my_env['PATH_INFO'] = 'api/v3/things/batchevent'
+          my_env['PATH_INFO'] = @configuration['bundle_api']
           my_env['QUERY_STRING'] = ''
           my_env['REQUEST_METHOD'] = 'POST'
           my_env['CONTENT_LENGTH'] = {'requests' => rack_input}.to_json.length
