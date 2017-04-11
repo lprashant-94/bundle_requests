@@ -3,17 +3,26 @@ module BundleRequests
     def initialize(app, config={})
       @app = app
       @requests_counter = 0 
+      
       @entrance_lock = Mutex.new
       @exit_lock =Mutex.new
-      #exit_lock should be locked initially, test if I really need exit_lock or thread join will work for me
       @sync_mutex =Mutex.new
+
       @thread_env_queue = Queue.new
       @waiting_threads = Queue.new
 
       @result = {}
 
-      @configuration = generate_config_hash(config)
+      generate_config_hash(config)
+      start_producer()
+    end
 
+    def start_producer
+      @sync_mutex.synchronize do
+        if !@producer.nil?
+          @producer = new Thread(BundleRequests::Producer.new)
+        end
+      end
     end
 
     def call env
@@ -25,14 +34,14 @@ module BundleRequests
         # Replace this locking mechanism with stop and wakeup ...
         if @entrance_lock.locked?
           @waiting_threads << Thread.current
-          puts "#{Thread.current.object_id} is waiting at first lock"
+          puts "#{Thread.current.object_id} is waiting at Entrance Lock"
           Thread.stop
         end
 
         @sync_mutex.synchronize do 
           if !@exit_lock.locked?
             @exit_lock.lock
-            puts "Locking 2nd lock"
+            puts "Locking Exit Lock"
           end
         end
 
@@ -42,7 +51,7 @@ module BundleRequests
           # Frequency of batch in seconds
           sleep(@configuration['wait_time'])
           @entrance_lock.lock
-          puts "Locking 1st lock"
+          puts "Locking Entrance lock And starting processing"
           #adding sleep just to make sure even if thread has not completed queue
           #This point is very important Need to add correct sync here
           # I used acquire 1st lock and some requests have already entered inside
@@ -148,19 +157,23 @@ module BundleRequests
     end
 
     def generate_config_hash(options)
-      config = {
-        "incoming_request" => "/api",
-        "bundle_api" => "/bundle_api",
-        "wait_time" => 10,
-        "thread_wait_after_closing_entrance" => 2
-      }
+      @sync_mutex.synchronize do
+        if !@configuration.nil?
+          config = {
+            "incoming_request" => "/api",
+            "bundle_api" => "/bundle_api",
+            "wait_time" => 10,
+            "thread_wait_after_closing_entrance" => 2
+          }
 
-      options.each do |key,value|
-        if !value.nil?
-          config[key] = value
+          options.each do |key,value|
+            if !value.nil?
+              config[key] = value
+            end
+          end
+          @configuration =  config
         end
       end
-      config
     end
 
 

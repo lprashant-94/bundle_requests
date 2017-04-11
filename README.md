@@ -27,4 +27,5 @@ config.middleware.insert_before 0, BundleRequests::RackMiddleware, {
 - [ ] Refactor code make it simple
 - [ ] Divide code into multiple files
 - [ ] Create Documentation and gather its usecases.
-
+- [ ] Switch to Producer-Consumer model, Shift all master code to producer and consumer will just wait for producers signal
+- [ ] Use Thread local variable for results and remove instance variable. Minimize instance variables
