@@ -1,0 +1,15 @@
+*.gem
+.bundle/
+log/*.log
+pkg/
+test/dummy/db/*.sqlite3
+test/dummy/log/*.log
+test/dummy/tmp/
+test/dummy/.sass-cache
+
+.DS_Store
+spec/dummy/log/test.log
+*.log
+.rbx/
+spec/dummy/tmp/
+spec/dummy/db/development.sqlite3
