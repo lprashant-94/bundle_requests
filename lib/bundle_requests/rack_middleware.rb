@@ -1,6 +1,6 @@
 module BundleRequests
   class RackMiddleware
-    def initialize(app, &config_block)
+    def initialize(app, config={})
       @app = app
       @requests_counter = 0 
       @entrance_lock = Mutex.new
@@ -9,6 +9,9 @@ module BundleRequests
       @sync_mutex =Mutex.new
       @thread_env_queue = Queue.new
       @result = {}
+
+      @configuration = generate_config_hash(config)
+
     end
 
     def call env
@@ -21,6 +24,9 @@ module BundleRequests
         
         #wait if any batch is currently getting processed
         #trying to make busy wait normal
+
+
+        # Replace this locking mechanism with stop and wakeup ...
         while @entrance_lock.locked?
           sleep(0.005)
         end
@@ -136,5 +142,25 @@ module BundleRequests
       r
       # do something...
     end
+
+    def generate_config_hash(options)
+      config = {
+        "incoming_request" => "/api",
+        "bundle_api" => "/bundle_api",
+        "wait_time" => 10,
+        "thread_wait_at_lock" => 2,
+        "thread_wait_after_closing_entrance" => 2
+      }
+
+      options.each do |key,value|
+        if !value.nil?
+          config[key] = value
+        end
+      end
+      config
+    end
+
+
+
   end
 end
