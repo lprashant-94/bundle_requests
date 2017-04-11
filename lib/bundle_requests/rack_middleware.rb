@@ -1,3 +1,4 @@
+require 'bundle_requests/producer'
 module BundleRequests
   class RackMiddleware
     def initialize(app, config={})
@@ -19,8 +20,8 @@ module BundleRequests
 
     def start_producer
       @sync_mutex.synchronize do
-        if !@producer.nil?
-          @producer = new Thread(BundleRequests::Producer.new)
+        if @producer.nil?
+          @producer =  BundleRequests::Producer.new # cretes new infinite thread
         end
       end
     end
@@ -158,7 +159,7 @@ module BundleRequests
 
     def generate_config_hash(options)
       @sync_mutex.synchronize do
-        if !@configuration.nil?
+        if @configuration.nil?
           config = {
             "incoming_request" => "/api",
             "bundle_api" => "/bundle_api",
