@@ -3,14 +3,14 @@ module BundleRequests
   class RackMiddleware
     def initialize(app, config={})
       @app = app
-      @sync_mutex =Mutex.new
-      start_consumer(config)
+      start_consumer(app, config)
     end
+#   @consumer
 
-    def start_consumer(config)
-      @sync_mutex.synchronize do
+    def start_consumer(app, config)
+      Mutex.new.synchronize do
         if @consumer.nil?
-          @consumer =  BundleRequests::Consumer.new(config) # cretes new infinite thread
+          @consumer =  BundleRequests::Consumer.new(app, config) # cretes new infinite thread
         end
       end
     end
@@ -18,9 +18,10 @@ module BundleRequests
     def call env
       Rails.logger.info("request #{env['REQUEST_PATH']} #{Thread.current.name}")
       s = Time.now
-      if env['REQUEST_PATH'] == @configuration['incoming_request']
+      if env['REQUEST_PATH'] == $configuration['incoming_request']
         Thread.current['request'] = env
-        @waiting_threads << Thread.current
+        $waiting_threads << Thread.current
+        puts "I am waiting #{Thread.current.object_id}"
         Thread.stop
         response = Thread.current['response']
       else
