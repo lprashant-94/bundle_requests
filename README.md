@@ -29,3 +29,6 @@ config.middleware.insert_before 0, BundleRequests::RackMiddleware, {
 - [ ] Create Documentation and gather its usecases.
 - [ ] Switch to Producer-Consumer model, Shift all master code to producer and consumer will just wait for producers signal
 - [ ] Use Thread local variable for results and remove instance variable. Minimize instance variables
+- [ ] Use Thread pool for consumers
+- [ ] Support for multiple api's 
+- [ ] Have Maximum number of waiting threads, to bypass sleep call

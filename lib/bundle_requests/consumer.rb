@@ -1,10 +1,10 @@
 module BundleRequests
-  class Producer
+  class Consumer
     def initialize
-      Thread.new{producer_code}
+      Thread.new{consumer_code}
     end
 
-    def producer_code
+    def consumer_code
       
     end
 

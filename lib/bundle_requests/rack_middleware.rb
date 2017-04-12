@@ -1,4 +1,4 @@
-require 'bundle_requests/producer'
+require 'bundle_requests/consumer'
 module BundleRequests
   class RackMiddleware
     def initialize(app, config={})
@@ -15,13 +15,13 @@ module BundleRequests
       @result = {}
 
       generate_config_hash(config)
-      start_producer()
+      start_consumer()
     end
 
-    def start_producer
+    def start_consumer
       @sync_mutex.synchronize do
-        if @producer.nil?
-          @producer =  BundleRequests::Producer.new # cretes new infinite thread
+        if @consumer.nil?
+          @consumer =  BundleRequests::Producer.new # cretes new infinite thread
         end
       end
     end
