@@ -13,7 +13,8 @@ config.middleware.insert_before 0, BundleRequests::RackMiddleware, {
         "incoming_request" => "/api",
         "bundle_api" => "/bundle_api",
         "wait_time" => 10,
-        "thread_wait_after_closing_entrance" => 2
+        "thread_wait_after_closing_entrance" => 2,
+        "max_waiting_thread" => 16
       }
 ```
 
