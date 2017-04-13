@@ -6,6 +6,9 @@ module BundleRequests
       start_consumer(app, config)
     end
 #   @consumer
+#   @app
+#   $waiting_threads
+#   $configuration
 
     def start_consumer(app, config)
       Mutex.new.synchronize do

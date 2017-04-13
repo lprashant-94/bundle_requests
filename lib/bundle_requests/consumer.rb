@@ -27,7 +27,7 @@ module BundleRequests
           puts "#{c} threads are waiting so sleeping"
           sleep($configuration["wait_time"])
           next if $waiting_threads.length == 0
-        end 
+        end
         puts "Started request processing----------------------------------"
         threads = pop_some_waiting_threads
         rack_input = gather_all_requests(threads)
@@ -77,6 +77,7 @@ module BundleRequests
     def distribute_result_and_wakeup_those_threads(threads, result)
       for index in 0...threads.length
         t = threads[index]
+        # hardcoded response for development. Replace it with result[index]
         t["response"] = [200,{"Content-Type" => "application/json"},["Status Ok"]]
         t.wakeup
       end
