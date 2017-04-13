@@ -5,7 +5,7 @@
 This is the middleware which will combine multiple request from different client, bundle as single request and process once using batch processing api. This works for rails threaded server e.g. PUMA.
 
 
-![ScreenShot](https://raw.github.com/lprashant-94/bundle_requests/master/HighLevelDesign.jpg
+![ScreenShot](https://raw.github.com/lprashant-94/bundle_requests/master/HighLevelDesign.jpg)
 
 For getting started add BundleRequests::RackMiddleware into application.rb same as below example.
 
