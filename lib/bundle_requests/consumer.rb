@@ -52,7 +52,7 @@ module BundleRequests
       threads.each do |t|
         e = t['request']
         req = Rack::Request.new(e)
-        Rails.logger.info req.inspect
+        Rails.logger.debug req.inspect
         rack_input << JSON.parse(req.body.read)
       end
       Rails.logger.info rack_input
