@@ -71,3 +71,5 @@ config.middleware.insert_before 0, BundleRequests::RackMiddleware, {
 - All clients need to wait for some time (User can do middleware configuration in such a way that it wont affect user experience and run with maximal capacity. Keeping wait_time less than 10-20ms also works great.)
 - Need to write new bundle api
 
+### Other similar ideas:
+- https://microservice-api-patterns.org/patterns/quality/dataTransferParsimony/RequestBundle.html
